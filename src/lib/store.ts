@@ -1,8 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createWithEqualityFn } from 'zustand/traditional';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Matrix, Tactic, Technique, SubTechnique, DetectionFormat } from '../types';
 
-interface AttackState {
+interface ThemeState {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+interface AttackState extends ThemeState {
   matrices: Matrix[];
   selectedMatrix: string | null;
   selectedTactic: string | null;
@@ -18,9 +23,11 @@ interface AttackState {
   updateSubTechniques: (techniqueId: string, subTechniques: SubTechnique[]) => void;
 }
 
-export const useAttackStore = create<AttackState>()(
+export const useAttackStore = createWithEqualityFn<AttackState>()(
   persist(
     (set) => ({
+      isDarkMode: false,
+      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       matrices: [],
       selectedMatrix: null,
       selectedTactic: null,
@@ -63,6 +70,8 @@ export const useAttackStore = create<AttackState>()(
     }),
     {
       name: 'attack-store',
+      storage: createJSONStorage(() => localStorage),
     }
-  )
+  ),
+  Object.is
 );
