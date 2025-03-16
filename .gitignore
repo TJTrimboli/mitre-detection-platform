@@ -137,4 +137,4 @@ dist
 
 # Extra
 *.bak/
-.code-workspace
+*.code-workspace
